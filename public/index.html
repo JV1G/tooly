@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP3 Downloader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+        }
+
+        label {
+            color: #60676d;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: clamp(300px, 85%, 660px); 
+            padding: 2rem;
+            gap: 1rem;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            margin: 0;
+            padding: 1rem;
+            box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.1); 
+        }
+
+        form, input, button {
+            border-radius: 0.3rem;
+
+        }
+
+        input, button {
+            border: 0.07rem solid #ccc;
+        }
+
+        input {
+            font-size: 1.1rem;
+            padding: 0.8rem;
+        }
+
+        button {
+            padding: 0.6rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #progress-container {
+            position: relative;
+            width: 100%;
+            height: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        #progress-bar {
+            background-color: #ccc;
+            width: 100%;
+            height: 100%;
+            border-radius: 0.3rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #progress-cursor {
+            display: none;
+            background-color: #007bff;
+            width: 20%;
+            height: 100%;
+            animation: progressMove 1s linear infinite;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        @keyframes progressMove {
+            0% {
+                left: 0;
+            }
+            50% {
+                left: 80%;
+            }
+            100% {
+                left: 0;
+            }
+        }
+
+        .progress-bar-success {
+            background-color: #28a745;
+        }
+
+        .progress-bar-error {
+            background-color: red;
+        }
+
+        .progress-cursor-hidden {
+            display: none;
+        }
+
+        .completed {
+            animation: none;
+            width: 100%;
+            left: 0;
+        }
+
+        #message {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            z-index: 10;
+            color: white; 
+            background: rgba(0, 0, 0, 0.6); 
+        }
+
+        .success {
+            color: #28a745;
+        }
+
+        .error {
+            color: #ff4d4d;
+        }
+
+        #title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: black;
+            margin: 0;
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        @media (max-width: 600px) {
+            #title {
+                flex-direction: column; 
+                align-items: center;
+                gap: 0.3rem;
+            }
+        }
+
+        .youtube, .mp3-downloader {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .tube {
+            color: white;
+            background-color: red;
+            padding: 0.1rem 0.2rem; 
+            border-radius: 0.3rem;
+        }
+
+        .downloader {
+            color: green;
+        }
+
+        .mp3 {
+            color: blue;
+        }
+
+        #about {
+            text-align: justify;
+            line-height: 1.6; 
+        }
+
+        #about h2 {
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            width: 100%;
+        }
+
+        .footer-content {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .footer-links li {
+            display: inline;
+            margin: 0 1rem;
+        }
+
+        .footer-links a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="content-wrapper">
+        <header>
+            <h1 id="title">
+                <span class="youtube">
+                    <span class="you">You</span>
+                    <span class="tube">Tube</span>
+                </span>
+                <span class="mp3-downloader">
+                    <span class="mp3">MP3</span>
+                    <span class="downloader">Downloader</span>
+                </span>
+            </h1>
+        </header>
+    
+        <main>
+            <form id="download-form" aria-labelledby="form-title">
+                <label for="url" id="form-title">Please insert a valid YouTube or other website video URL</label>
+                <input id="url" type="text" placeholder="youtube.com/watch?v=YoU-tuBe_23" required aria-required="true">
+                <button type="submit">Download</button>
+            </form>
+            
+            <div id="progress-container">
+                <div id="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div id="progress-cursor" aria-hidden="true"></div>
+                </div>
+                <div id="message" role="status" aria-live="polite"></div>
+            </div>
+
+            <section id="about">
+                <h2> 
+                    Tooly MP3
+                </h2>
+                <p>This MP3 Downloader tool enables you to extract audio from YouTube videos and other websites supported by yt-dlp. To use the tool, simply paste the URL of the video you wish to convert into the input field. The tool will process the video and provide you with an MP3 file for download. Designed with simplicity and efficiency in mind, this tool offers a user-friendly interface for quick audio extraction from a wide range of video sources. Whether you need to save a song, podcast, or any other audio content, our MP3 Downloader makes the process seamless and straightforward.</p>
+                <h3>How to Download MP3</h3>
+                <ol>
+                    <li>Visit the website where the video you want to download is located and find the video you wish to convert.</li>
+                    <li>Click on the video to start playing it, and then copy the URL from the address bar of your browser.</li>
+                    <li>Return to Tooly and paste the copied video URL into the input field provided in our converter.</li>
+                    <li>Click the "Convert" button to initiate the conversion process. Please note that our tool supports audio conversions for videos up to 90 minutes in length to ensure efficient processing times.</li>
+                    <li>Once the conversion is complete, you will see a "Download" button. Click on it to begin downloading the MP3 file.</li>
+                </ol>
+                <p>By using Tooly, you agree to our Terms of Use. Thank you for choosing our MP3 Converter for your audio extraction needs.</p>
+            </section>
+        </main>
+    
+        <footer>
+            <div class="footer-content">
+                <p>&copy; 2024 Tooly. All rights reserved.</p>
+                <ul class="footer-links">
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#privacy-policy">Privacy Policy</a></li>
+                    <li><a href="#copyright-claims">Copyrigth Claims</a></li>
+                    <li><a href="#terms-of-use">Terms of Use</a></li>
+                </ul>
+            </div>
+        </footer>
+    </div>
+    <script>
+        document.getElementById('download-form').addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent the default form submission behavior
+
+            // Retrieve the URL input value from the form
+            const url = document.getElementById('url').value;
+
+            // Get references to the message display, progress bar, and progress cursor elements
+            const messageDiv = document.getElementById('message');
+            const progressBar = document.getElementById('progress-bar');
+            const progressCursor = document.getElementById('progress-cursor');
+
+            // Reset the progress bar and cursor
+            progressCursor.style.animation = 'progressMove 1s linear infinite';
+            progressCursor.style.display = 'block'; 
+            progressBar.style.backgroundColor = '#ccc';
+
+            // Clear previous messages
+            messageDiv.textContent = '';
+            messageDiv.classList.remove('success', 'error');
+            
+            // Show the progress bar
+            progressBar.style.display = 'block';
+            try {
+                // Make an asynchronous POST request to the /download endpoint with the URL in the request body
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                });
+
+                // Check if the server's response was not successful and notify user about not ok
+                if (!response.ok) {
+                    throw new Error('Download failed');
+                }
+
+                // Retrieve the 'Content-Disposition' header from the response
+                const disposition = response.headers.get('Content-Disposition');
+                let filename = 'downloaded.mp3'; // Default filename
+
+                // Check if the 'Content-Disposition' header is present and contains 'filename='
+                if (disposition && disposition.indexOf('filename=') !== -1) {
+                    // Extract the filename from the header value and remove any double quotes
+                    filename = disposition.split('filename=')[1].replace(/"/g, ''); 
+                }
+
+                // Create a download link for the file and trigger the download
+                const blob = await response.blob(); // Create a Blob object from the response data
+                const urlBlob = URL.createObjectURL(blob); // Create a temporary URL for the Blob object
+                const a = document.createElement('a'); // Create a new <a> element for triggering the download
+                a.href = urlBlob; // Set the href attribute of the <a> element to the temporary URL
+                a.download = filename; // Set the download attribute of the <a> element to specify the filename
+                document.body.appendChild(a); // Append the <a> element to the document body
+                a.click(); // Programmatically click the <a> element to trigger the download
+                URL.revokeObjectURL(urlBlob); // Release the temporary URL once it's no longer needed
+                document.body.removeChild(a); // Remove the <a> element from the document body
+
+                // Stop the cursor animation and hide it
+                progressCursor.style.animation = 'none';
+                progressCursor.style.display = 'none'; 
+
+                // Change the progress bar to green to indicate completion
+                progressBar.style.backgroundColor = '#28a745';
+
+                // Show success message
+                messageDiv.classList.add('success');
+                messageDiv.textContent = 'Downloaded Successfully!';
+            } catch (error) {
+                // Change the progress bar to red to indicate error
+                progressBar.style.backgroundColor = 'red';
+                // Stop the cursor animation and hide it
+                progressCursor.style.animation = 'none';
+                progressCursor.style.display = 'none'; 
+                // Show error message
+                messageDiv.classList.add('error');
+                messageDiv.textContent = 'An unexpected error occurred.';
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>

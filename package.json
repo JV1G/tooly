@@ -1,0 +1,25 @@
+{
+  "name": "new-folder",
+  "version": "1.0.0",
+  "description": "Tools project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JV1G/tooly.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JV1G/tooly/issues"
+  },
+  "homepage": "https://github.com/JV1G/tooly#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2",
+    "ytdl-core": "^4.11.5"
+  }
+}
